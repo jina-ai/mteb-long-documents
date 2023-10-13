@@ -35,7 +35,7 @@ class FEVERLongDocumentRetrieval(AbsTaskRetrieval):
         corpus_titles = [title.replace(' ', '_') for title in corpus_rows['title']]
         qrels_rows = [{'id': row['id'], 'evidence_wiki_url': row['evidence_wiki_url']} for row in query_rows if row['label'] == 'SUPPORTS' and row['evidence_wiki_url'] in corpus_titles]
 
-        self.queries = {self._EVAL_SPLIT: {row['id']: {'text': row['claim']} for row in query_rows}}
+        self.queries = {self._EVAL_SPLIT: {row['id']: row['claim'] for row in query_rows}}
         self.corpus = {self._EVAL_SPLIT: {row['title'].replace(' ', '_'): {'text': row['text']} for row in corpus_rows}}
         self.relevant_docs = {
             self._EVAL_SPLIT: {row['id']: {row['evidence_wiki_url']: 1} for row in qrels_rows}
