@@ -31,24 +31,25 @@ class FEVERLongDocumentRetrieval(AbsTaskRetrieval):
             return
 
         query_rows = datasets.load_dataset(self.description['hf_hub_name'], 'v1.0', split='paper_test')
-        corpus_rows = datasets.load_dataset('wikipedia', '20220301.en', split='train')[:1_000_000]
-        corpus_titles = [title.replace(' ', '_') for title in corpus_rows['title']]
-        qrels_rows = [
-            {'id': str(row['id']), 'evidence_wiki_url': row['evidence_wiki_url']}
+        corpus_rows = datasets.load_dataset('wikipedia', '20220301.en', split='train')
+        corpus_titles = set(title.replace(' ', '_') for title in corpus_rows['title'])
+        filtered_queries = {
+            str(row['id']): {'evidence_wiki_url': row['evidence_wiki_url'], 'claim': row['claim']}
             for row in query_rows
             if row['label'] == 'SUPPORTS' and row['evidence_wiki_url'] in corpus_titles
-        ]
-        q_ids = [r['id'] for r in qrels_rows]
+            and row['evidence_sentence_id'] > 10
+        }
+        q_evidence_wiki_urls = set(r['evidence_wiki_url'] for r in list(filtered_queries.values()))
 
         self.queries = {
-            self._EVAL_SPLIT: {str(row['id']): row['claim'] for row in query_rows if str(row['id']) in q_ids}
+            self._EVAL_SPLIT: {str(row['id']): row['claim'] for row in query_rows if str(row['id']) in list(filtered_queries.keys())}
         }
         self.corpus = {
             self._EVAL_SPLIT: {
-                title.replace(' ', '_'): {'text': text}
-                for title, text in zip(corpus_rows['title'], corpus_rows['text'])
+                row['title'].replace(' ', '_'): {'text': row['text']}
+                for row in corpus_rows if row['title'].replace(' ', '_') in q_evidence_wiki_urls
             }
         }
-        self.relevant_docs = {self._EVAL_SPLIT: {str(row['id']): {row['evidence_wiki_url']: 1} for row in qrels_rows}}
-
+        self.relevant_docs = {self._EVAL_SPLIT: {key: {values['evidence_wiki_url']: 1} for key, values in filtered_queries.items()}}
+        print(f'Loaded {len(self.queries[self._EVAL_SPLIT])} queries and {len(self.corpus[self._EVAL_SPLIT])} documents.')
         self.data_loaded = True
