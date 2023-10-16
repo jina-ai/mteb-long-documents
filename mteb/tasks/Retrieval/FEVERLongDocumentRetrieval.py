@@ -40,9 +40,11 @@ class FEVERLongDocumentRetrieval(AbsTaskRetrieval):
             and row['evidence_sentence_id'] > 10
         }
         q_evidence_wiki_urls = set(r['evidence_wiki_url'] for r in list(filtered_queries.values()))
+        # extend q_evidence_wiki_urls with 1M more wiki urls from corpus_rows
+        q_evidence_wiki_urls.update(t.replace(' ', '_') for t in set(corpus_rows[:1_000_000]['title']))
 
         self.queries = {
-            self._EVAL_SPLIT: {str(row['id']): row['claim'] for row in query_rows if str(row['id']) in list(filtered_queries.keys())}
+            self._EVAL_SPLIT: {str(row['id']): row['claim'] for row in query_rows if str(row['id']) in filtered_queries}
         }
         self.corpus = {
             self._EVAL_SPLIT: {
@@ -50,6 +52,7 @@ class FEVERLongDocumentRetrieval(AbsTaskRetrieval):
                 for row in corpus_rows if row['title'].replace(' ', '_') in q_evidence_wiki_urls
             }
         }
+
         self.relevant_docs = {self._EVAL_SPLIT: {key: {values['evidence_wiki_url']: 1} for key, values in filtered_queries.items()}}
         print(f'Loaded {len(self.queries[self._EVAL_SPLIT])} queries and {len(self.corpus[self._EVAL_SPLIT])} documents.')
         self.data_loaded = True
