@@ -28,8 +28,8 @@ class NarrativeQARetrieval(AbsTaskRetrieval):
             return
 
         data = datasets.load_dataset(self.description['hf_hub_name'], split=self._EVAL_SPLIT)
-        self.queries = {self._EVAL_SPLIT: {i: row['question'] for i, row in enumerate(data)}}
-        self.corpus = {self._EVAL_SPLIT: {row['document']['id']: {'text': row['document']['text']} for row in data}}
-        self.relevant_docs = {self._EVAL_SPLIT: {i: row['document']['id'] for i, row in enumerate(data)}}
+        self.queries = {self._EVAL_SPLIT: {str(i): row['question'] for i, row in enumerate(data)}}
+        self.corpus = {self._EVAL_SPLIT: {str(row['document']['id']): {'text': row['document']['text']} for row in data}}
+        self.relevant_docs = {self._EVAL_SPLIT: {str(i): row['document']['id'] for i, row in enumerate(data)}}
 
         self.data_loaded = True
