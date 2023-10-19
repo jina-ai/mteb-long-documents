@@ -37,7 +37,7 @@ class NQFulltextRetrieval(AbsTaskRetrieval):
         self.queries = {self._EVAL_SPLIT: {row['_id']: row['text'] for row in query_rows}}
         self.corpus = {self._EVAL_SPLIT: {row['_id']: row for row in corpus_rows}}
         self.relevant_docs = {
-            self._EVAL_SPLIT: {row['_id']: {v: 1 for v in row['text'].split(' ')} for row in qrels_rows}
+            self._EVAL_SPLIT: {row['_id']: {v.split('-')[-1]: 1 for v in row['text'].split(' ')} for row in qrels_rows}
         }
 
         self.data_loaded = True
