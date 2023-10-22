@@ -40,3 +40,4 @@ from .TRECCOVIDPLRetrieval import *
 from .TriviaQARetrieval import *
 from .MSMARCODocumentRetrieval import *
 from .NarrativeQARetrieval import *
+from .QangarooRetrieval import *
