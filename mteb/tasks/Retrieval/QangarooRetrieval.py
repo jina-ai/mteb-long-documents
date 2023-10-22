@@ -30,8 +30,12 @@ class QangarooRetrieval(AbsTaskRetrieval):
             return
 
         data = datasets.load_dataset(self.description['hf_hub_name'], 'wikihop', split='validation')
-        self.queries = {self._EVAL_SPLIT: {str(i): row['query'] for i, row in enumerate(data)}}
-        self.corpus = {self._EVAL_SPLIT: {str(i): {'text': ' '.join(row['supports'])} for i, row in enumerate(data)}}
-        self.relevant_docs = {self._EVAL_SPLIT: {str(i): {str(i): 1} for i, row in enumerate(data)}}
+        self.queries = {self._EVAL_SPLIT: {('q' + str(i)): row['query'] for i, row in enumerate(data)}}
+        self.corpus = {
+            self._EVAL_SPLIT: {
+                ('c' + str(i)): {'_id': str(i), 'text': ' '.join(row['supports'])} for i, row in enumerate(data)
+            }
+        }
+        self.relevant_docs = {self._EVAL_SPLIT: {('q' + str(i)): {('c' + str(i)): 1} for i, row in enumerate(data)}}
 
         self.data_loaded = True
