@@ -32,16 +32,16 @@ class CodeSearchNetRetrieval(AbsTaskRetrieval):
         q = set()
         d = set()
         for idx, row in enumerate(data):
-            func_doc_string = row['func_documentation_string']
-            if func_doc_string == '' or len(func_doc_string.split())  <= 3:
+            func_doc_tokens = ' '.join(row['func_documentation_tokens'])
+            if func_doc_tokens == '' or len(row['func_documentation_tokens']) <= 3:
                 continue
-            if row['func_documentation_string'] in q:
+            if func_doc_tokens in q:
                 continue
             if row['func_code_string'] in d:
                 continue
-            q.add(row['func_documentation_string'])
+            q.add(func_doc_tokens)
             d.add(row['func_code_string'])
-            self.queries[self._EVAL_SPLIT][f'q{idx}'] = row['func_documentation_string']
+            self.queries[self._EVAL_SPLIT][f'q{idx}'] = func_doc_tokens
             self.corpus[self._EVAL_SPLIT][f'd{idx}'] = {'text': row['func_code_string']}
             self.relevant_docs[self._EVAL_SPLIT][f'q{idx}'] = {f'd{idx}': 1}
 
