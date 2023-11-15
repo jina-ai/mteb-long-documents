@@ -9,7 +9,7 @@ class CodeSearchNetRetrieval(AbsTaskRetrieval):
     def description(self):
         return {
             'name': 'CodeSearchNetRetrieval',
-            'hf_hub_name': 'code_search_net',
+            'hf_hub_name': 'jinaai/code_search_net_clean',
             'reference': 'https://github.com/github/CodeSearchNet',
             "description": (
                 "CodeSearchNet is a collection of datasets and benchmarks that explore the problem of code retrieval using natural language."
@@ -32,17 +32,16 @@ class CodeSearchNetRetrieval(AbsTaskRetrieval):
         q = set()
         d = set()
         for idx, row in enumerate(data):
-            func_doc_tokens = ' '.join(row['func_documentation_tokens'])
-            if func_doc_tokens == '' or len(row['func_documentation_tokens']) <= 3:
+            code = row['code']
+            docs = row['docs']
+            if docs in q:
                 continue
-            if func_doc_tokens in q:
+            if code in d:
                 continue
-            if row['func_code_string'] in d:
-                continue
-            q.add(func_doc_tokens)
-            d.add(row['func_code_string'])
-            self.queries[self._EVAL_SPLIT][f'q{idx}'] = func_doc_tokens
-            self.corpus[self._EVAL_SPLIT][f'd{idx}'] = {'text': row['func_code_string']}
+            q.add(docs)
+            d.add(code)
+            self.queries[self._EVAL_SPLIT][f'q{idx}'] = docs
+            self.corpus[self._EVAL_SPLIT][f'd{idx}'] = {'text': code}
             self.relevant_docs[self._EVAL_SPLIT][f'q{idx}'] = {f'd{idx}': 1}
 
         self.data_loaded = True
