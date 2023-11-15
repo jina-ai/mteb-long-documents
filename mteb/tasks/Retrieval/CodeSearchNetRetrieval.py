@@ -42,7 +42,7 @@ class CodeSearchNetRetrieval(AbsTaskRetrieval):
             q.add(row['func_documentation_string'])
             d.add(row['func_code_string'])
             self.queries[self._EVAL_SPLIT][f'q{idx}'] = row['func_documentation_string']
-            self.corpus[self._EVAL_SPLIT][f'd{idx}'] = row['func_code_string']
+            self.corpus[self._EVAL_SPLIT][f'd{idx}'] = {'text': row['func_code_string']}
             self.relevant_docs[self._EVAL_SPLIT][f'q{idx}'] = {f'd{idx}': 1}
 
         self.data_loaded = True
