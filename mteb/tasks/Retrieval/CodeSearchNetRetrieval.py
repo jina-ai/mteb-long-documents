@@ -33,14 +33,14 @@ class CodeSearchNetRetrieval(AbsTaskRetrieval):
         d = set()
         for idx, row in enumerate(data):
             code = row['code']
-            docs = row['docs']
-            if docs in q:
+            query = row['docs']
+            if query in q:
                 continue
             if code in d:
                 continue
-            q.add(docs)
+            q.add(query)
             d.add(code)
-            self.queries[self._EVAL_SPLIT][f'q{idx}'] = docs
+            self.queries[self._EVAL_SPLIT][f'q{idx}'] = query
             self.corpus[self._EVAL_SPLIT][f'd{idx}'] = {'text': code}
             self.relevant_docs[self._EVAL_SPLIT][f'q{idx}'] = {f'd{idx}': 1}
 
