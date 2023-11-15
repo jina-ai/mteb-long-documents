@@ -2,7 +2,7 @@ import datasets
 from ...abstasks.AbsTaskRetrieval import AbsTaskRetrieval
 
 
-class NarrativeQARetrieval(AbsTaskRetrieval):
+class CodeSearchNetRetrieval(AbsTaskRetrieval):
     _EVAL_SPLIT = 'test'
 
     @property
@@ -32,6 +32,9 @@ class NarrativeQARetrieval(AbsTaskRetrieval):
         q = set()
         d = set()
         for idx, row in enumerate(data):
+            func_doc_string = row['func_documentation_string']
+            if func_doc_string == '' or func_doc_string.split()  <= 3:
+                continue
             if row['func_documentation_string'] in q:
                 continue
             if row['func_code_string'] in d:
