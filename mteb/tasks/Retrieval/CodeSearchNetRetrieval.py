@@ -33,7 +33,7 @@ class CodeSearchNetRetrieval(AbsTaskRetrieval):
         d = set()
         for idx, row in enumerate(data):
             func_doc_string = row['func_documentation_string']
-            if func_doc_string == '' or func_doc_string.split()  <= 3:
+            if func_doc_string == '' or len(func_doc_string.split())  <= 3:
                 continue
             if row['func_documentation_string'] in q:
                 continue
