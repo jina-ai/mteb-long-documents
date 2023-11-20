@@ -5,13 +5,13 @@ import urllib.request
 from ...abstasks.AbsTaskRetrieval import AbsTaskRetrieval
 
 
-class WebQueryRetrieval(AbsTaskRetrieval):
-    _EVAL_SPLIT = 'test'
-    
+class CoSQARetrieval(AbsTaskRetrieval):
+    _EVAL_SPLIT = 'dev'
+
     @property
     def description(self):
         return {
-            'name': 'WebQueryRetrieval',
+            'name': 'CoSQARetrieval',
             'reference': 'https://github.com/microsoft/CodeXGLUE',
             "description": (
                 "Researchers from Microsoft Research Asia, Developer Division, and Bing introduce CodeXGLUE, "
@@ -20,7 +20,7 @@ class WebQueryRetrieval(AbsTaskRetrieval):
             ),
             "type": "Retrieval",
             "category": "s2p",
-            "eval_splits": ["test"],
+            "eval_splits": ["dev"],
             "eval_langs": ["en"],
             "main_score": "mrr",
         }
@@ -30,8 +30,8 @@ class WebQueryRetrieval(AbsTaskRetrieval):
             return
 
         with tempfile.TemporaryDirectory() as tmp:
-            url = "https://raw.githubusercontent.com/microsoft/CodeXGLUE/main/Text-Code/NL-code-search-WebQuery/data/test_webquery.json"
-            test_file = os.path.join(tmp, "test_webquery.json")
+            url = "https://raw.githubusercontent.com/microsoft/CodeXGLUE/main/Text-Code/NL-code-search-WebQuery/CoSQA/cosqa-dev.json"
+            test_file = os.path.join(tmp, "test_cosqa.json")
             urllib.request.urlretrieve(url, test_file)
             with open(test_file, "r") as f:
                 data = json.load(f)
