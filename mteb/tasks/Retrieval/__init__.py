@@ -39,3 +39,4 @@ from .SciFactPLRetrieval import *
 from .TRECCOVIDPLRetrieval import *
 from .NarrativeQARetrieval import *
 from .CodeSearchNetRetrieval import *
+from .WebQueryRetrieval import *
