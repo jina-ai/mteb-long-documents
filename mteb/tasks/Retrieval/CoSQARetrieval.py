@@ -44,11 +44,9 @@ class CoSQARetrieval(AbsTaskRetrieval):
             code = row['code']
             query = row['doc']
             label = row['label']
-            self.queries[self._EVAL_SPLIT][f'q{idx}'] = query
             self.corpus[self._EVAL_SPLIT][f'd{idx}'] = {'text': code}
             if label == 1:
+                self.queries[self._EVAL_SPLIT][f'q{idx}'] = query
                 self.relevant_docs[self._EVAL_SPLIT][f'q{idx}'] = {f'd{idx}': 1}
-            else:
-                self.relevant_docs[self._EVAL_SPLIT][f'q{idx}'] = {}
 
         self.data_loaded = True
