@@ -75,12 +75,15 @@ class CodeSearchNetAdvRetrieval(AbsTaskRetrieval):
             urllib.request.urlretrieve(zenodo_url, python_zip_pth)
             with zipfile.ZipFile(python_zip_pth, 'r') as zip_ref:
                 zip_ref.extractall(python_dir)
-            os.system(f'cd {dset_dir} && python preprocess.py')
+            ret_code = os.system(f'cd {dset_dir} && python preprocess.py')
+            assert ret_code == 0, ret_code
 
             self.queries = {self._EVAL_SPLIT: {}}
             self.corpus = {self._EVAL_SPLIT: {}}
             self.relevant_docs = {self._EVAL_SPLIT: {}}
-            jsonObj = pd.read_json(path_or_buf=os.path.join(dset_dir, f'{self._EVAL_SPLIT}.jsonl'), lines=True)
+            data_path = os.path.join(dset_dir, f'{self._EVAL_SPLIT}.jsonl')
+            assert os.path.exists(data_path)
+            jsonObj = pd.read_json(path_or_buf=data_path, lines=True)
 
             for code, doc, lang, url, idx in zip(jsonObj['function'], jsonObj['docstring'], jsonObj['language'], jsonObj['url'], jsonObj['idx']):
                 self.queries[self._EVAL_SPLIT][url].append(f'[{lang}] {doc}')
