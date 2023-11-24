@@ -77,7 +77,7 @@ class CodeSearchNetAdvRetrieval(AbsTaskRetrieval):
             with zipfile.ZipFile(python_zip_pth, 'r') as zip_ref:
                 zip_ref.extractall(python_dir)
             status = subprocess.run(['python', 'preprocess.py'], cwd=dset_dir)
-            status.check_returncode()
+            assert status.returncode == 0, (status.stdout, status.stderr)
 
             self.queries = {self._EVAL_SPLIT: {}}
             self.corpus = {self._EVAL_SPLIT: {}}
