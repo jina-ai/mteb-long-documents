@@ -40,3 +40,4 @@ from .TRECCOVIDPLRetrieval import *
 from .NarrativeQARetrieval import *
 from .CodeSearchNetRetrieval import *
 from .CoSQARetrieval import *
+from .CodeSearchNetAdvRetrieval import *
