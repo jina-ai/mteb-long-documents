@@ -2,6 +2,7 @@ import tempfile
 import tokenize
 import io
 import os
+import subprocess
 import pandas as pd
 import zipfile
 import urllib.request
@@ -75,7 +76,7 @@ class CodeSearchNetAdvRetrieval(AbsTaskRetrieval):
             urllib.request.urlretrieve(zenodo_url, python_zip_pth)
             with zipfile.ZipFile(python_zip_pth, 'r') as zip_ref:
                 zip_ref.extractall(python_dir)
-            ret_code = os.system(f'cd {dset_dir} && python preprocess.py')
+            ret_code = subprocess.run(['python', 'preprocess.py'], cwd=dset_dir).returncode
             assert ret_code == 0, ret_code
 
             self.queries = {self._EVAL_SPLIT: {}}
