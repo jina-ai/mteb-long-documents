@@ -1,11 +1,8 @@
 import tempfile
 import tokenize
-import tokenize
 import io
 import os
-import json
 import pandas as pd
-import shutil
 import zipfile
 import urllib.request
 from ...abstasks.AbsTaskRetrieval import AbsTaskRetrieval
