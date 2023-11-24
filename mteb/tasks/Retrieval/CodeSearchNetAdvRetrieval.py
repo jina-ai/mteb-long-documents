@@ -76,7 +76,7 @@ class CodeSearchNetAdvRetrieval(AbsTaskRetrieval):
             urllib.request.urlretrieve(zenodo_url, python_zip_pth)
             with zipfile.ZipFile(python_zip_pth, 'r') as zip_ref:
                 zip_ref.extractall(python_dir)
-            status = subprocess.run(['python', 'preprocess.py'], cwd=dset_dir)
+            status = subprocess.run(['python', 'preprocess.py'], cwd=dset_dir, capture_output=True)
             assert status.returncode == 0, (status.stdout, status.stderr)
 
             self.queries = {self._EVAL_SPLIT: {}}
