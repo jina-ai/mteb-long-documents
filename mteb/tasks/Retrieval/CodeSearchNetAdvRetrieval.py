@@ -86,7 +86,7 @@ class CodeSearchNetAdvRetrieval(AbsTaskRetrieval):
             jsonObj = pd.read_json(path_or_buf=data_path, lines=True)
 
             for code, doc, lang, url, idx in zip(jsonObj['function'], jsonObj['docstring'], jsonObj['language'], jsonObj['url'], jsonObj['idx']):
-                self.queries[self._EVAL_SPLIT][url].append(f'[{lang}] {doc}')
+                self.queries[self._EVAL_SPLIT][url] = f'[{lang}] {doc}'
                 self.corpus[self._EVAL_SPLIT][str(idx)] = {'text': remove_comments_and_docstrings(code)}
                 self.relevant_docs[self._EVAL_SPLIT][url] = {str(idx): 1}
 
