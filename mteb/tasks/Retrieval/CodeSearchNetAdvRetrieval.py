@@ -69,13 +69,12 @@ class CodeSearchNetAdvRetrieval(AbsTaskRetrieval):
             dset_dir = os.path.join(tmp, 'dataset')
             urllib.request.urlretrieve(dset_url, dset_zip_pth)
             with zipfile.ZipFile(dset_zip_pth, 'r') as zip_ref:
-                zip_ref.extractall(dset_dir)
+                zip_ref.extractall()
 
             python_zip_pth = os.path.join(dset_dir, "python.zip")
-            python_dir = os.path.join(dset_dir, "python")
             urllib.request.urlretrieve(zenodo_url, python_zip_pth)
             with zipfile.ZipFile(python_zip_pth, 'r') as zip_ref:
-                zip_ref.extractall(python_dir)
+                zip_ref.extractall()
             status = subprocess.run(['python', 'preprocess.py'], cwd=dset_dir, capture_output=True)
             assert status.returncode == 0, (status.stdout, status.stderr)
 
