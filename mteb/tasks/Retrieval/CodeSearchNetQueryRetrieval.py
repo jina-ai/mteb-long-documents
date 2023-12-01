@@ -7,7 +7,7 @@ import urllib.request
 import csv
 from itertools import islice
 
-class CodeSearchNetRetrieval(AbsTaskRetrieval):
+class CodeSearchNetQueryRetrieval(AbsTaskRetrieval):
     _EVAL_SPLIT = 'python'
 
     @property
