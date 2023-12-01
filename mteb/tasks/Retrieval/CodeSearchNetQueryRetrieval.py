@@ -38,7 +38,7 @@ class CodeSearchNetRetrieval(AbsTaskRetrieval):
         url_to_id = {}
         for idx, row in enumerate(data):
             code = remove_comments_and_docstrings(row['function'], remove_comments=False)
-            self.corpus[self._EVAL_SPLIT][f'd{idx}'] = code
+            self.corpus[self._EVAL_SPLIT][f'd{idx}'] = {'text': code}
             url_to_id[row['url']] = f'd{idx}'
 
         with tempfile.TemporaryDirectory() as tmpdir:
