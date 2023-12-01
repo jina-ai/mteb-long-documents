@@ -8,7 +8,7 @@ import zipfile
 import urllib.request
 from ...abstasks.AbsTaskRetrieval import AbsTaskRetrieval
 
-def remove_comments_and_docstrings(source):
+def remove_comments_and_docstrings(source, remove_comments=True):
     io_obj = io.StringIO(source)
     out = ""
     prev_toktype = tokenize.INDENT
@@ -23,7 +23,7 @@ def remove_comments_and_docstrings(source):
             last_col = 0
         if start_col > last_col:
             out += (" " * (start_col - last_col))
-        if token_type == tokenize.COMMENT:
+        if token_type == tokenize.COMMENT and remove_comments:
             pass
         elif token_type == tokenize.STRING:
             if prev_toktype != tokenize.INDENT and prev_toktype != tokenize.NEWLINE and start_col > 0:
