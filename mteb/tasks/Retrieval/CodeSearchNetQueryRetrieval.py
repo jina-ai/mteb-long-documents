@@ -64,7 +64,7 @@ class CodeSearchNetQueryRetrieval(AbsTaskRetrieval):
 
         distinct_queries = set(row[0] for row in filtered_ground_truth)
         for idx, query in enumerate(distinct_queries):
-            self._queries[self._EVAL_SPLIT][f'q{idx}'] = query
+            self.queries[self._EVAL_SPLIT][f'q{idx}'] = query
             self.relevant_docs[self._EVAL_SPLIT][f'q{idx}'] = {}
             relevant_docs = filter(lambda row: row[0] == query, filtered_ground_truth)
             for _, url, relevance in relevant_docs:
