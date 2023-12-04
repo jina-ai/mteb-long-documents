@@ -58,7 +58,6 @@ class CodeSearchNetQueryRetrieval(AbsTaskRetrieval):
             with open(data_path, 'r') as f:
                 reader = csv.reader(f)
                 for row in islice(reader, 1, None):
-                    print(row)
                     lang, query, url, relevance, _ = row
                     relevance = int(relevance)
                     if lang.lower() == self._EVAL_SPLIT and relevance > 0:
