@@ -13,7 +13,7 @@ class CodeSearchNetQueryRetrieval(AbsTaskRetrieval):
     @property
     def description(self):
         return {
-            'name': 'CodeSearchNetRetrieval',
+            'name': 'CodeSearchNetQueryRetrieval',
             'hf_hub_name': 'jinaai/code_search_net_dedupe',
             'reference': 'https://github.com/github/CodeSearchNet',
             "description": (
