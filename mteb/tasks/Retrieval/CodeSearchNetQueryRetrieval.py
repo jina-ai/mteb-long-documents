@@ -58,11 +58,13 @@ class CodeSearchNetQueryRetrieval(AbsTaskRetrieval):
             with open(data_path, 'r') as f:
                 reader = csv.reader(f)
                 for row in islice(reader, 1, None):
+                    print(row)
                     lang, query, url, relevance, _ = row
-                    if lang == self._EVAL_SPLIT and relevance > 0:
+                    if lang.lower() == self._EVAL_SPLIT and relevance > 0:
                         filtered_ground_truth.append((query, url, relevance))
 
         distinct_queries = set(row[0] for row in filtered_ground_truth)
+        print(distinct_queries)
         for idx, query in enumerate(distinct_queries):
             self.queries[self._EVAL_SPLIT][f'q{idx}'] = query
             self.relevant_docs[self._EVAL_SPLIT][f'q{idx}'] = {}
