@@ -1,11 +1,20 @@
 import datasets
 from ...abstasks.AbsTaskRetrieval import AbsTaskRetrieval
-from .CodeSearchNetAdvRetrieval import remove_comments_and_docstrings
 import tempfile
 import os
 import urllib.request
 import csv
 from itertools import islice
+
+def _filter_docs(docs, code, lang):
+    if docs in code:
+        if lang == 'python':
+            start_doc = code.find('"""')
+            end_doc = code.find('"""', start_doc + 1)
+            code = code[:start_doc] + code[end_doc + 3:]
+        else:
+            return None
+    return code
 
 class CodeSearchNetQueryRetrieval(AbsTaskRetrieval):
     _EVAL_SPLIT = 'python'
@@ -37,7 +46,7 @@ class CodeSearchNetQueryRetrieval(AbsTaskRetrieval):
 
         url_to_id = {}
         for idx, row in enumerate(data):
-            code = remove_comments_and_docstrings(row['function'], remove_comments=False)
+            code = _filter_docs(row['docstring'], row['function'], self._EVAL_SPLIT)
             self.corpus[self._EVAL_SPLIT][f'd{idx}'] = {'text': code}
             url_to_id[row['url']] = f'd{idx}'
 
