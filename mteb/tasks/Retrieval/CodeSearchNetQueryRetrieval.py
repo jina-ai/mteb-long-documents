@@ -60,6 +60,7 @@ class CodeSearchNetQueryRetrieval(AbsTaskRetrieval):
                 for row in islice(reader, 1, None):
                     print(row)
                     lang, query, url, relevance, _ = row
+                    relevance = int(relevance)
                     if lang.lower() == self._EVAL_SPLIT and relevance > 0:
                         filtered_ground_truth.append((query, url, relevance))
 
