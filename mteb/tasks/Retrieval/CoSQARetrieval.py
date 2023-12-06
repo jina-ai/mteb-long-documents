@@ -6,8 +6,6 @@ from ...abstasks.AbsTaskRetrieval import AbsTaskRetrieval
 
 
 class CoSQARetrieval(AbsTaskRetrieval):
-    _EVAL_SPLIT = 'dev'
-
     @property
     def description(self):
         return {
@@ -20,7 +18,7 @@ class CoSQARetrieval(AbsTaskRetrieval):
             ),
             "type": "Retrieval",
             "category": "s2p",
-            "eval_splits": ["dev"],
+            "eval_splits": ["dev", "train"],
             "eval_langs": ["en"],
             "main_score": "mrr",
         }
@@ -29,24 +27,29 @@ class CoSQARetrieval(AbsTaskRetrieval):
         if self.data_loaded:
             return
 
-        with tempfile.TemporaryDirectory() as tmp:
-            url = "https://raw.githubusercontent.com/microsoft/CodeXGLUE/main/Text-Code/NL-code-search-WebQuery/CoSQA/cosqa-dev.json"
-            test_file = os.path.join(tmp, "test_cosqa.json")
-            urllib.request.urlretrieve(url, test_file)
-            with open(test_file, "r") as f:
-                data = json.load(f)
-            os.remove(test_file)
+        eval_splits = kwargs.get("eval_splits")
+        eval_splits = eval_splits if eval_splits is not None else self.description["eval_splits"]
 
-        self.queries = {self._EVAL_SPLIT: {}}
-        self.corpus = {self._EVAL_SPLIT: {}}
-        self.relevant_docs = {self._EVAL_SPLIT: {}}
-        for idx, row in enumerate(data):
-            code = row['code']
-            query = row['doc']
-            label = row['label']
-            self.corpus[self._EVAL_SPLIT][f'd{idx}'] = {'text': code}
-            if label == 1:
-                self.queries[self._EVAL_SPLIT][f'q{idx}'] = query
-                self.relevant_docs[self._EVAL_SPLIT][f'q{idx}'] = {f'd{idx}': 1}
+        self.queries = {split: {} for split in eval_splits}
+        self.corpus = {split: {} for split in eval_splits}
+        self.relevant_docs = {split: {} for split in eval_splits}
+
+        for split in eval_splits:
+            with tempfile.TemporaryDirectory() as tmp:
+                url = f"https://raw.githubusercontent.com/microsoft/CodeXGLUE/main/Text-Code/NL-code-search-WebQuery/CoSQA/cosqa-{split}.json"
+                test_file = os.path.join(tmp, "cosqa.json")
+                urllib.request.urlretrieve(url, test_file)
+                with open(test_file, "r") as f:
+                    data = json.load(f)
+                os.remove(test_file)
+
+            for idx, row in enumerate(data):
+                code = row['code']
+                query = row['doc']
+                label = row['label']
+                self.corpus[split][f'd{idx}'] = {'text': code}
+                if label == 1:
+                    self.queries[split][f'q{idx}'] = query
+                    self.relevant_docs[split][f'q{idx}'] = {f'd{idx}': 1}
 
         self.data_loaded = True
