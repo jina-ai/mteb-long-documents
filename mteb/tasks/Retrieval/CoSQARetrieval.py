@@ -36,7 +36,7 @@ class CoSQARetrieval(AbsTaskRetrieval):
 
         for split in eval_splits:
             with tempfile.TemporaryDirectory() as tmp:
-                url = f"https://raw.githubusercontent.com/microsoft/CodeXGLUE/main/Text-Code/NL-code-search-WebQuery/CoSQA/cosqa-{split}.json"
+                url = f"https://raw.githubusercontent.com/microsoft/CodeXGLUE/e252e54a74dd55b1294e2379b213b1541dfefaf5/Text-Code/NL-code-search-WebQuery/CoSQA/cosqa-{split}.json"
                 test_file = os.path.join(tmp, "cosqa.json")
                 urllib.request.urlretrieve(url, test_file)
                 with open(test_file, "r") as f:
