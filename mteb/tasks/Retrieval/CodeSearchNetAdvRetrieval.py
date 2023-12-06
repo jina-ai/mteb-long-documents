@@ -61,7 +61,7 @@ class CodeSearchNetAdvRetrieval(AbsTaskRetrieval):
         eval_splits = eval_splits if eval_splits is not None else self.description["eval_splits"]
 
         with tempfile.TemporaryDirectory() as tmp:
-            dset_url = "https://github.com/microsoft/CodeXGLUE/raw/main/Text-Code/NL-code-search-Adv/dataset.zip"
+            dset_url = "https://github.com/microsoft/CodeXGLUE/blob/e252e54a74dd55b1294e2379b213b1541dfefaf5/Text-Code/NL-code-search-Adv/dataset.zip"
             zenodo_url = "https://zenodo.org/record/7857872/files/python.zip"
             dset_zip_pth = os.path.join(tmp, 'dataset.zip')
             dset_dir = os.path.join(tmp, 'dataset')
