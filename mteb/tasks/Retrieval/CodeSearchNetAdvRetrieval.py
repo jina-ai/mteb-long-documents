@@ -38,8 +38,6 @@ def remove_comments_and_docstrings(source, remove_comments=True):
 
 
 class CodeSearchNetAdvRetrieval(AbsTaskRetrieval):
-    _EVAL_SPLIT = 'valid'
-
     @property
     def description(self):
         return {
@@ -59,6 +57,9 @@ class CodeSearchNetAdvRetrieval(AbsTaskRetrieval):
         if self.data_loaded:
             return
 
+        eval_splits = kwargs.get("eval_splits")
+        eval_splits = eval_splits if eval_splits is not None else self.description["eval_splits"]
+
         with tempfile.TemporaryDirectory() as tmp:
             dset_url = "https://github.com/microsoft/CodeXGLUE/raw/main/Text-Code/NL-code-search-Adv/dataset.zip"
             zenodo_url = "https://zenodo.org/record/7857872/files/python.zip"
@@ -75,16 +76,17 @@ class CodeSearchNetAdvRetrieval(AbsTaskRetrieval):
             status = subprocess.run(['python', 'preprocess.py'], cwd=dset_dir, capture_output=True)
             assert status.returncode == 0, (status.stdout, status.stderr)
 
-            self.queries = {self._EVAL_SPLIT: {}}
-            self.corpus = {self._EVAL_SPLIT: {}}
-            self.relevant_docs = {self._EVAL_SPLIT: {}}
-            data_path = os.path.join(dset_dir, f'{self._EVAL_SPLIT}.jsonl')
-            assert os.path.exists(data_path)
-            jsonObj = pd.read_json(path_or_buf=data_path, lines=True)
+            self.queries = {split: {} for split in eval_splits}
+            self.corpus = {split: {} for split in eval_splits}
+            self.relevant_docs = {split: {} for split in eval_splits}
+            for split in eval_splits:
+                data_path = os.path.join(dset_dir, f'{split}.jsonl')
+                assert os.path.exists(data_path)
+                jsonObj = pd.read_json(path_or_buf=data_path, lines=True)
 
-            for code, doc, lang, url, idx in zip(jsonObj['function'], jsonObj['docstring'], jsonObj['language'], jsonObj['url'], jsonObj['idx']):
-                self.queries[self._EVAL_SPLIT][url] = f'[{lang}] {doc}'
-                self.corpus[self._EVAL_SPLIT][str(idx)] = {'text': remove_comments_and_docstrings(code)}
-                self.relevant_docs[self._EVAL_SPLIT][url] = {str(idx): 1}
+                for code, doc, lang, url, idx in zip(jsonObj['function'], jsonObj['docstring'], jsonObj['language'], jsonObj['url'], jsonObj['idx']):
+                    self.queries[split][url] = f'[{lang}] {doc}'
+                    self.corpus[split][str(idx)] = {'text': remove_comments_and_docstrings(code)}
+                    self.relevant_docs[split][url] = {str(idx): 1}
 
         self.data_loaded = True
