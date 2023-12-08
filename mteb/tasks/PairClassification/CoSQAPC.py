@@ -12,7 +12,7 @@ class CoSQAPC(AbsTaskPairClassification):
             "name": "CoSQAPC",
             "category": "s2s",
             "type": "PairClassification",
-            "eval_splits": ["dev"],
+            "eval_splits": ["dev", "train"],
             "eval_langs": ["en"],
             "main_score": "ap",
             "revision": "70970daeab8776df92f5ea462b6173c0b46fd2d1",
@@ -22,19 +22,27 @@ class CoSQAPC(AbsTaskPairClassification):
         if self.data_loaded:
             return
 
-        with tempfile.TemporaryDirectory() as tmp:
-            url = "https://raw.githubusercontent.com/microsoft/CodeXGLUE/main/Text-Code/NL-code-search-WebQuery/CoSQA/cosqa-dev.json"
-            test_file = os.path.join(tmp, "test_cosqa.json")
-            urllib.request.urlretrieve(url, test_file)
-            with open(test_file, "r") as f:
-                data = json.load(f)
-            os.remove(test_file)
+        eval_splits = kwargs.get("eval_splits")
+        eval_splits = eval_splits if eval_splits is not None else self.description["eval_splits"]
+        eval_splits = [split for split in eval_splits if split in self.description['eval_splits']]
+        if len(eval_splits) == 0:
+            eval_splits = ["dev"]
 
-        self.dataset = {'dev': [{'sent1': [], 'sent2': [], 'labels': []},]}
+        self.dataset = {}
+        for split in eval_splits:
+            with tempfile.TemporaryDirectory() as tmp:
+                url = f"https://raw.githubusercontent.com/microsoft/CodeXGLUE/main/Text-Code/NL-code-search-WebQuery/CoSQA/cosqa-{split}.json"
+                test_file = os.path.join(tmp, "test_cosqa.json")
+                urllib.request.urlretrieve(url, test_file)
+                with open(test_file, "r") as f:
+                    data = json.load(f)
+                os.remove(test_file)
 
-        for row in data:
-            self.dataset['dev'][0]['sent1'].append(row['code'])
-            self.dataset['dev'][0]['sent2'].append(row['doc'])
-            self.dataset['dev'][0]['labels'].append(row['label'])
+            self.dataset[split] = [{'sent1': [], 'sent2': [], 'labels': []},]
+
+            for row in data:
+                self.dataset[split][0]['sent1'].append(row['code'])
+                self.dataset[split][0]['sent2'].append(row['doc'])
+                self.dataset[split][0]['labels'].append(row['label'])
 
         self.data_loaded = True
