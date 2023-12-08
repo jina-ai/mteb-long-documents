@@ -13,7 +13,7 @@ class CoSQAPC(AbsTaskPairClassification):
             "category": "s2p",
             "type": "PairClassification",
             "eval_splits": ["dev", "train"],
-            "eval_langs": ["en"],
+            "eval_langs": ["python"],
             "main_score": "ap",
             "revision": "70970daeab8776df92f5ea462b6173c0b46fd2d1",
         }

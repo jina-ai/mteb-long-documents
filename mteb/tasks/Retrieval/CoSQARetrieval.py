@@ -19,7 +19,7 @@ class CoSQARetrieval(AbsTaskRetrieval):
             "type": "Retrieval",
             "category": "s2p",
             "eval_splits": ["dev", "train"],
-            "eval_langs": ["en"],
+            "eval_langs": ["python"],
             "main_score": "mrr_at_10",
         }
 
