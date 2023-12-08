@@ -60,7 +60,7 @@ class AbsTaskRetrieval(AbsTask):
                                                 batch_size=batch_size, corpus_chunk_size=corpus_chunk_size,
                                                 score_function=score_function, **kwargs)
             self._add_main_score(scores)
-
+        return scores
 
     def _evaluate_monolingual(
         self,
