@@ -29,7 +29,6 @@ class CoSQAPC(AbsTaskPairClassification):
         for split in eval_splits:
             with tempfile.TemporaryDirectory() as tmp:
                 url = f"https://raw.githubusercontent.com/microsoft/CodeXGLUE/main/Text-Code/NL-code-search-WebQuery/CoSQA/cosqa-{split}.json"
-                print(url)
                 test_file = os.path.join(tmp, "test_cosqa.json")
                 urllib.request.urlretrieve(url, test_file)
                 with open(test_file, "r") as f:
