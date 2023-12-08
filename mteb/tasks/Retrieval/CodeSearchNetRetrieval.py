@@ -44,7 +44,7 @@ class CodeSearchNetRetrieval(AbsTaskRetrieval, MultilingualTask):
                 data = datasets.load_dataset(self.description['hf_hub_name'], split=f'{split}.{lang}')
                 for idx, row in enumerate(data):
                     code = row['code']
-                    query = row['queries']
+                    query = row['doc']
                     self.queries[lang][split][f'q{idx}'] = query
                     self.corpus[lang][split][f'd{idx}'] = {'text': code}
                     self.relevant_docs[lang][split][f'q{idx}'] = {f'd{idx}': 1}
