@@ -23,7 +23,7 @@ class CoSQAPC(AbsTaskPairClassification):
             return
 
         with tempfile.TemporaryDirectory() as tmp:
-            url = "https://raw.githubusercontent.com/microsoft/CodeXGLUE/main/Text-Code/NL-code-search-WebQuery/CoSQA/cosqa-train.json"
+            url = "https://raw.githubusercontent.com/microsoft/CodeXGLUE/main/Text-Code/NL-code-search-WebQuery/CoSQA/cosqa-dev.json"
             test_file = os.path.join(tmp, "test_cosqa.json")
             urllib.request.urlretrieve(url, test_file)
             with open(test_file, "r") as f:
