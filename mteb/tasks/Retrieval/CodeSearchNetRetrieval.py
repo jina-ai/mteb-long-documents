@@ -32,8 +32,6 @@ class CodeSearchNetRetrieval(AbsTaskRetrieval, MultilingualTask):
         self.relevant_docs = {}
 
         for lang in self.langs:
-            if lang not in self.description['eval_langs']:
-                continue
             self.queries[lang] = {}
             self.corpus[lang] = {}
             self.relevant_docs[lang] = {}

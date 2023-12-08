@@ -255,7 +255,7 @@ class MTEB:
 
             try:
                 if isinstance(eval_splits, dict):
-                    task_eval_splits = eval_splits[task.description['name']]
+                    task_eval_splits = eval_splits[task.description["name"]]
                 elif isinstance(eval_splits, list):
                     task_eval_splits = eval_splits
                 else:
