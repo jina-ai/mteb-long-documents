@@ -16,7 +16,7 @@ class CodeSearchNetRetrieval(AbsTaskRetrieval, MultilingualTask):
             "type": "Retrieval",
             "category": "s2p",
             "eval_splits": ["validation", "test"],
-            "eval_langs": ["en"],
+            "eval_langs": ["go", "java", "javascript", "php", "python", "ruby"],
             "main_score": "mrr",
         }
 
@@ -32,6 +32,8 @@ class CodeSearchNetRetrieval(AbsTaskRetrieval, MultilingualTask):
         self.relevant_docs = {}
 
         for lang in self.langs:
+            if lang not in self.description['eval_langs']:
+                continue
             self.queries[lang] = {}
             self.corpus[lang] = {}
             self.relevant_docs[lang] = {}
