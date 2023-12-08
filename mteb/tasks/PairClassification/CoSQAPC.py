@@ -24,9 +24,6 @@ class CoSQAPC(AbsTaskPairClassification):
 
         eval_splits = kwargs.get("eval_splits")
         eval_splits = eval_splits if eval_splits is not None else self.description["eval_splits"]
-        eval_splits = [split for split in eval_splits if split in self.description['eval_splits']]
-        if len(eval_splits) == 0:
-            eval_splits = ["dev"]
 
         self.dataset = {}
         for split in eval_splits:

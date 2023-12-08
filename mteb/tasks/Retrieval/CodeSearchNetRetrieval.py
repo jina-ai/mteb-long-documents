@@ -17,7 +17,7 @@ class CodeSearchNetRetrieval(AbsTaskRetrieval, MultilingualTask):
             "category": "s2p",
             "eval_splits": ["validation", "test"],
             "eval_langs": ["go", "java", "javascript", "php", "python", "ruby"],
-            "main_score": "mrr",
+            "main_score": "mrr_at_10",
         }
 
     def load_data(self, **kwargs):

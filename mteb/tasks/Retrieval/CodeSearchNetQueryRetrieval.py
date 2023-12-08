@@ -32,7 +32,7 @@ class CodeSearchNetQueryRetrieval(AbsTaskRetrieval):
             "category": "s2p",
             "eval_splits": ["python", "java", "javascript", "go", "php", "ruby"],
             "eval_langs": ["en"],
-            "main_score": "mrr",
+            "main_score": "mrr_at_10",
         }
 
     def load_data(self, **kwargs):

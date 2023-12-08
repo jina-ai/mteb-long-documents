@@ -20,7 +20,7 @@ class CoSQARetrieval(AbsTaskRetrieval):
             "category": "s2p",
             "eval_splits": ["dev", "train"],
             "eval_langs": ["en"],
-            "main_score": "mrr",
+            "main_score": "mrr_at_10",
         }
 
     def load_data(self, **kwargs):

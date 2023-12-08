@@ -50,7 +50,7 @@ class CodeSearchNetAdvRetrieval(AbsTaskRetrieval):
             "category": "s2p",
             "eval_splits": ["valid", "test"],
             "eval_langs": ["en"],
-            "main_score": "mrr",
+            "main_score": "mrr_at_10",
         }
 
     def load_data(self, **kwargs):
