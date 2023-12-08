@@ -46,12 +46,15 @@ class CoSQARetrieval(AbsTaskRetrieval):
                     data = json.load(f)
                 os.remove(test_file)
 
+            known_queries = set()
             for idx, row in enumerate(data):
                 code = row['code']
                 query = row['doc']
                 label = row['label']
                 self.corpus[split][f'd{idx}'] = {'text': code}
                 if label == 1:
+                    assert query not in known_queries
+                    known_queries.add(query)
                     self.queries[split][f'q{idx}'] = query
                     self.relevant_docs[split][f'q{idx}'] = {f'd{idx}': 1}
 
