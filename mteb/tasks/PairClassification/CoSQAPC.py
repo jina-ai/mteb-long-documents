@@ -10,7 +10,7 @@ class CoSQAPC(AbsTaskPairClassification):
     def description(self):
         return {
             "name": "CoSQAPC",
-            "category": "s2s",
+            "category": "s2p",
             "type": "PairClassification",
             "eval_splits": ["dev", "train"],
             "eval_langs": ["en"],
