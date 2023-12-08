@@ -11,7 +11,7 @@ def _filter_docs(docs, code, lang):
         if lang == 'python':
             start_doc = code.find('"""')
             end_doc = code.find('"""', start_doc + 1)
-            code = code[:start_doc] + code[end_doc + 3:]
+            code = code[:start_doc].rstrip(' ') + code[end_doc + 3:].lstrip('\n')
         else:
             return None
     return code
