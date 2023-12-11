@@ -43,6 +43,7 @@ class CodeSearchNetRetrieval(AbsTaskRetrieval, MultilingualTask):
                 for idx, row in enumerate(data):
                     code = row['code']
                     query = row['doc']
+                    assert isinstance(code, str) and isinstance(query, str), (code, query)
                     self.queries[lang][split][f'q{idx}'] = query
                     self.corpus[lang][split][f'd{idx}'] = {'text': code}
                     self.relevant_docs[lang][split][f'q{idx}'] = {f'd{idx}': 1}
