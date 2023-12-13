@@ -16,9 +16,7 @@ def _filter_docs(docs, code, lang):
             return None
     return code
 
-class CodeSearchNetQueryRetrieval(AbsTaskRetrieval):
-    _EVAL_SPLIT = 'python'
-
+class CodeSearchNetQueryRetrieval(AbsTaskRetrieval, MultilingualTask):
     @property
     def description(self):
         return {
@@ -30,8 +28,8 @@ class CodeSearchNetQueryRetrieval(AbsTaskRetrieval):
             ),
             "type": "Retrieval",
             "category": "s2p",
-            "eval_splits": ["python", "java", "javascript", "go", "php", "ruby"],
-            "eval_langs": ["en"],
+            "eval_splits": ["test", ],
+            "eval_langs": ["python", "java", "javascript", "go", "php", "ruby"],
             "main_score": "mrr_at_10",
         }
 
@@ -39,36 +37,47 @@ class CodeSearchNetQueryRetrieval(AbsTaskRetrieval):
         if self.data_loaded:
             return
 
-        data = datasets.load_dataset(self.description['hf_hub_name'], split=self._EVAL_SPLIT)
-        self.queries = {self._EVAL_SPLIT: {}}
-        self.corpus = {self._EVAL_SPLIT: {}}
-        self.relevant_docs = {self._EVAL_SPLIT: {}}
-
-        url_to_id = {}
-        for idx, row in enumerate(data):
-            code = _filter_docs(row['docstring'], row['function'], self._EVAL_SPLIT)
-            self.corpus[self._EVAL_SPLIT][f'd{idx}'] = {'text': code}
-            url_to_id[row['url']] = f'd{idx}'
+        eval_splits = kwargs.get("eval_splits")
+        eval_splits = eval_splits if eval_splits is not None else self.description["eval_splits"]
+        assert eval_splits == [] or eval_splits == ["test"]
 
         with tempfile.TemporaryDirectory() as tmpdir:
             annotation_url = 'https://raw.githubusercontent.com/github/CodeSearchNet/master/resources/annotationStore.csv'
             data_path = os.path.join(tmpdir, 'annotationStore.csv')
             urllib.request.urlretrieve(annotation_url, data_path)
-            filtered_ground_truth = []
             with open(data_path, 'r') as f:
                 reader = csv.reader(f)
-                for row in islice(reader, 1, None):
-                    lang, query, url, relevance, _ = row
+                annotation_store = list(reader)
+
+        for lang in self.langs:
+            self.queries[lang] = {}
+            self.corpus[lang] = {}
+            self.relevant_docs[lang] = {}
+            for split in eval_splits:
+                data = datasets.load_dataset(self.description['hf_hub_name'], split=lang)
+                self.queries[lang][split] = {}
+                self.corpus[lang][split] = {}
+                self.relevant_docs[lang][split] = {}
+
+                url_to_id = {}
+                for idx, row in enumerate(data):
+                    code = _filter_docs(row['docstring'], row['function'], lang)
+                    self.corpus[lang][split][f'd{idx}'] = {'text': code}
+                    url_to_id[row['url']] = f'd{idx}'
+
+                filtered_ground_truth = []
+                for row in islice(annotation_store, 1, None):
+                    row_lang, query, url, relevance, _ = row
                     relevance = int(relevance)
-                    if lang.lower() == self._EVAL_SPLIT and relevance > 0:
+                    if row_lang.lower() == lang and relevance > 0:
                         filtered_ground_truth.append((query, url, relevance))
 
-        distinct_queries = set(row[0] for row in filtered_ground_truth)
-        for idx, query in enumerate(distinct_queries):
-            self.queries[self._EVAL_SPLIT][f'q{idx}'] = query
-            self.relevant_docs[self._EVAL_SPLIT][f'q{idx}'] = {}
-            relevant_docs = filter(lambda row: row[0] == query, filtered_ground_truth)
-            for _, url, relevance in relevant_docs:
-                self.relevant_docs[self._EVAL_SPLIT][f'q{idx}'][url_to_id[url]] = relevance
+                distinct_queries = set(row[0] for row in filtered_ground_truth)
+                for idx, query in enumerate(distinct_queries):
+                    self.queries[lang][split][f'q{idx}'] = query
+                    self.relevant_docs[lang][split][f'q{idx}'] = {}
+                    relevant_docs = filter(lambda row: row[0] == query, filtered_ground_truth)
+                    for _, url, relevance in relevant_docs:
+                        self.relevant_docs[lang][split][f'q{idx}'][url_to_id[url]] = relevance
 
         self.data_loaded = True
