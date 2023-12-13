@@ -28,7 +28,7 @@ class CodeSearchNetQueryRetrieval(AbsTaskRetrieval, MultilingualTask):
             ),
             "type": "Retrieval",
             "category": "s2p",
-            "eval_splits": ["test", ],
+            "eval_splits": ["test"],
             "eval_langs": ["python", "java", "javascript", "go", "php", "ruby"],
             "main_score": "mrr_at_10",
         }
