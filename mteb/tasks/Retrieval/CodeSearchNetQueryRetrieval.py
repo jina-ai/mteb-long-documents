@@ -50,6 +50,10 @@ class CodeSearchNetQueryRetrieval(AbsTaskRetrieval, MultilingualTask):
                 reader = csv.reader(f)
                 annotation_store = list(reader)
 
+        self.queries = {}
+        self.corpus = {}
+        self.relevant_docs = {}
+        
         for lang in self.langs:
             self.queries[lang] = {}
             self.corpus[lang] = {}
