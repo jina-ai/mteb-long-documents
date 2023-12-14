@@ -1,5 +1,6 @@
 import datasets
 from ...abstasks.AbsTaskRetrieval import AbsTaskRetrieval
+from ...abstasks.MultilingualTask import MultilingualTask
 import tempfile
 import os
 import urllib.request
