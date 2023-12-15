@@ -6,16 +6,20 @@ import os
 import urllib.request
 import csv
 from itertools import islice
+from tqdm import tqdm
 
-def _filter_docs(docs, code, lang):
-    if docs in code:
-        if lang == 'python':
-            start_doc = code.find('"""')
-            end_doc = code.find('"""', start_doc + 1)
-            code = code[:start_doc].rstrip(' ') + code[end_doc + 3:].lstrip('\n')
-        else:
-            return None
+def filter_docs(docs, code, lang):
+    if docs in code and lang == 'python':
+        start_doc = code.find('"""')
+        end_doc = code.find('"""', start_doc + 1)
+        if start_doc < 0 or end_doc < 0:
+            start_doc = code.find("'''")
+            end_doc = code.find("'''", start_doc + 1)
+            if start_doc < 0 or end_doc < 0:
+                return docs
+        code = code[:start_doc].rstrip(' ') + code[end_doc + 3:].lstrip('\n')
     return code
+
 
 class CodeSearchNetQueryRetrieval(AbsTaskRetrieval, MultilingualTask):
     @property
@@ -53,11 +57,12 @@ class CodeSearchNetQueryRetrieval(AbsTaskRetrieval, MultilingualTask):
         self.queries = {}
         self.corpus = {}
         self.relevant_docs = {}
-        
+
         for lang in self.langs:
             self.queries[lang] = {}
             self.corpus[lang] = {}
             self.relevant_docs[lang] = {}
+            print(f'Loading data for {lang}')
             for split in eval_splits:
                 data = datasets.load_dataset(self.description['hf_hub_name'], split=lang)
                 self.queries[lang][split] = {}
@@ -65,8 +70,8 @@ class CodeSearchNetQueryRetrieval(AbsTaskRetrieval, MultilingualTask):
                 self.relevant_docs[lang][split] = {}
 
                 url_to_id = {}
-                for idx, row in enumerate(data):
-                    code = _filter_docs(row['docstring'], row['function'], lang)
+                for idx, row in tqdm(enumerate(data), total=len(data)):
+                    code = filter_docs(row['docstring'], row['function'], lang)
                     self.corpus[lang][split][f'd{idx}'] = {'text': code}
                     url_to_id[row['url']] = f'd{idx}'
 
