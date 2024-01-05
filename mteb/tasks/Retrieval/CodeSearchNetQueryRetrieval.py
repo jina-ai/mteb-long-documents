@@ -38,7 +38,7 @@ class CodeSearchNetQueryRetrieval(AbsTaskRetrieval, MultilingualTask):
             "main_score": "mrr_at_10",
         }
 
-    def load_data(self, **kwargs):
+    def load_data(self, skip_unannotated=True, exponentiate_relevance=True, **kwargs):
         if self.data_loaded:
             return
 
@@ -54,6 +54,7 @@ class CodeSearchNetQueryRetrieval(AbsTaskRetrieval, MultilingualTask):
                 reader = csv.reader(f)
                 annotation_store = list(reader)
 
+        annotated_urls = set(row[2] for row in islice(annotation_store, 1, None))
         self.queries = {}
         self.corpus = {}
         self.relevant_docs = {}
@@ -71,9 +72,12 @@ class CodeSearchNetQueryRetrieval(AbsTaskRetrieval, MultilingualTask):
 
                 url_to_id = {}
                 for idx, row in tqdm(enumerate(data), total=len(data)):
+                    url = row['url']
+                    if url not in annotated_urls and skip_unannotated:
+                        continue
                     code = filter_docs(row['docstring'], row['function'], lang)
                     self.corpus[lang][split][f'd{idx}'] = {'text': code}
-                    url_to_id[row['url']] = f'd{idx}'
+                    url_to_id[url] = f'd{idx}'
 
                 filtered_ground_truth = []
                 for row in islice(annotation_store, 1, None):
@@ -88,6 +92,7 @@ class CodeSearchNetQueryRetrieval(AbsTaskRetrieval, MultilingualTask):
                     self.relevant_docs[lang][split][f'q{idx}'] = {}
                     relevant_docs = filter(lambda row: row[0] == query, filtered_ground_truth)
                     for _, url, relevance in relevant_docs:
-                        self.relevant_docs[lang][split][f'q{idx}'][url_to_id[url]] = relevance
+                        transformed_relevance = 2 ** relevance - 1 if exponentiate_relevance else relevance
+                        self.relevant_docs[lang][split][f'q{idx}'][url_to_id[url]] = transformed_relevance
 
         self.data_loaded = True
