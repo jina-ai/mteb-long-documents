@@ -65,7 +65,8 @@ class CodeSearchNetQueryRetrieval(AbsTaskRetrieval, MultilingualTask):
             self.relevant_docs[lang] = {}
             print(f'Loading data for {lang}')
             for split in eval_splits:
-                data = datasets.load_dataset(self.description['hf_hub_name'], split=lang)
+                hf_ds_name = 'jinaai/code_search_net_dedupe_only_annotated' if skip_unannotated else 'jinaai/code_search_net_dedupe'
+                data = datasets.load_dataset(hf_ds_name, split=lang)
                 self.queries[lang][split] = {}
                 self.corpus[lang][split] = {}
                 self.relevant_docs[lang][split] = {}
@@ -73,8 +74,7 @@ class CodeSearchNetQueryRetrieval(AbsTaskRetrieval, MultilingualTask):
                 url_to_id = {}
                 for idx, row in tqdm(enumerate(data), total=len(data)):
                     url = row['url']
-                    if url not in annotated_urls and skip_unannotated:
-                        continue
+                    assert url in annotated_urls or not skip_unannotated
                     code = filter_docs(row['docstring'], row['function'], lang)
                     self.corpus[lang][split][f'd{idx}'] = {'text': code}
                     url_to_id[url] = f'd{idx}'
