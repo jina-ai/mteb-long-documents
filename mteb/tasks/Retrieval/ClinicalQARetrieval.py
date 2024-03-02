@@ -11,7 +11,7 @@ class ClinicalQARetrieval(AbsTaskRetrieval):
         return {
             'name': 'ClinicalQARetrieval',
             'hf_hub_name': 'starmpcc/Asclepius-Synthetic-Clinical-Notes',
-            'reference': 'starmpcc/Asclepius-Synthetic-Clinical-Notes'
+            'reference': 'starmpcc/Asclepius-Synthetic-Clinical-Notes',
             "description": (
                 "NarrativeQA is a dataset for the task of question answering on long narratives. It consists of "
                 "realistic QA instances collected from literature (fiction and non-fiction) and movie scripts. "
