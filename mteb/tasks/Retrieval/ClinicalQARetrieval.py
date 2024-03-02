@@ -4,7 +4,7 @@ from ...abstasks.AbsTaskRetrieval import AbsTaskRetrieval
 
 class ClinicalQARetrieval(AbsTaskRetrieval):
 
-    _EVAL_SPLIT = 'test'
+    _EVAL_SPLIT = 'train'
 
     @property
     def description(self):
