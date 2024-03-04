@@ -30,6 +30,6 @@ class ClinicalQARetrieval(AbsTaskRetrieval):
         data = datasets.load_dataset(self.description['hf_hub_name'], split=f'{self._EVAL_SPLIT}')
         self.queries = {self._EVAL_SPLIT: {str(i): row['question'] for i, row in enumerate(data)}}
         self.corpus = {self._EVAL_SPLIT: {str(row['patient_id']): {'text': row['answer']} for row in data}}
-        self.relevant_docs = {self._EVAL_SPLIT: {str(i): {row['patient_id']: 1} for i, row in enumerate(data)}}
+        self.relevant_docs = {self._EVAL_SPLIT: {str(i): {str(row['patient_id']): 1} for i, row in enumerate(data)}}
 
         self.data_loaded = True
