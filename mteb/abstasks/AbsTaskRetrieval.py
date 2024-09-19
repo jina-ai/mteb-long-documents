@@ -32,10 +32,42 @@ class AbsTaskRetrieval(AbsTask):
                 return False
         return True
 
-    def evaluate(
-        self,
+    def _add_main_score(self, scores):
+        if self.description["main_score"] in scores:
+            scores["main_score"] = scores[self.description["main_score"]]
+        else:
+            logger.warn(f"main score {self.description['main_score']} not found in scores {scores.keys()}")
+
+    def evaluate(self,
         model,
         split="test",
+        batch_size=128,
+        corpus_chunk_size=None,
+        score_function="cos_sim",
+        **kwargs
+    ):
+        if self.is_multilingual:
+            scores = {}
+            for lang in self.langs:
+                logger.info(f"\nTask: {self.description['name']}, split: {split}, language: {lang}. Running...")
+                scores[lang] = self._evaluate_monolingual(model, self.corpus[lang][split], self.queries[lang][split],
+                                                self.relevant_docs[lang][split],
+                                                batch_size=batch_size, corpus_chunk_size=corpus_chunk_size,
+                                                score_function=score_function, **kwargs)
+                self._add_main_score(scores[lang])
+        else:
+            scores = self._evaluate_monolingual(model, self.corpus[split], self.queries[split], self.relevant_docs[split],
+                                                batch_size=batch_size, corpus_chunk_size=corpus_chunk_size,
+                                                score_function=score_function, **kwargs)
+            self._add_main_score(scores)
+        return scores
+
+    def _evaluate_monolingual(
+        self,
+        model,
+        corpus,
+        queries,
+        relevant_docs,
         batch_size=128,
         corpus_chunk_size=None,
         score_function="cos_sim",
@@ -49,10 +81,9 @@ class AbsTaskRetrieval(AbsTask):
         if not self.data_loaded:
             self.load_data()
 
-        corpus, queries, relevant_docs = self.corpus[split], self.queries[split], self.relevant_docs[split]
         model = model if self.is_dres_compatible(model) else DRESModel(model)
 
-        if os.getenv("RANK", None) is None:
+        if os.getenv("RANK", None) is None or os.getenv("MTEB_SINGLE_GPU", "false").lower() == "true":
             # Non-distributed
             from beir.retrieval.search.dense import DenseRetrievalExactSearch as DRES
             model = DRES(

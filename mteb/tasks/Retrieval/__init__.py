@@ -38,3 +38,7 @@ from .SCIDOCSPLRetrieval import *
 from .SciFactPLRetrieval import *
 from .TRECCOVIDPLRetrieval import *
 from .NarrativeQARetrieval import *
+from .CodeSearchNetRetrieval import *
+from .CoSQARetrieval import *
+from .CodeSearchNetAdvRetrieval import *
+from .CodeSearchNetQueryRetrieval import *

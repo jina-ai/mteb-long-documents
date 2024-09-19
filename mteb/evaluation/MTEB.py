@@ -254,7 +254,13 @@ class MTEB:
                     continue
 
             try:
-                task_eval_splits = eval_splits if eval_splits is not None else task.description.get("eval_splits", [])
+                if isinstance(eval_splits, dict):
+                    task_eval_splits = eval_splits.get(task.description["name"], task.description.get("eval_splits", []))
+                elif isinstance(eval_splits, list):
+                    task_eval_splits = eval_splits
+                else:
+                    assert task_eval_splits is None
+                    task_eval_splits = task.description.get("eval_splits", [])
 
                 # load data
                 logger.info(f"Loading dataset for {task.description['name']}")
